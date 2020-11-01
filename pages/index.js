@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className=""></main>
 
-      <footer className="h-100">Powered by passion</footer>
+      <footer className="h-100 bg-black">Powered by passion</footer>
     </div>
   )
 }
