@@ -17,6 +17,10 @@ const MainScene = (props) => {
       className={`${styles.main_scene} ${
         styles[`main_scene__${variant}`]
       } ${className}`}
+      style={{
+        width: '100vw',
+        height: 'calc(100vh - 50px)',
+      }}
     >
       {children}
     </Tag>
@@ -32,7 +36,7 @@ MainScene.propTypes = {
 
 MainScene.defaultProps = {
   tagName: Canvas,
-  className: 'h-screen bg-red',
+  className: '',
   variant: 'default',
   children: '',
 }
