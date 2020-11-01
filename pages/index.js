@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
+import MainScene from '../components/MainScene'
+
 export default function Home() {
   return (
     <div
@@ -13,7 +15,9 @@ export default function Home() {
 
       <main
         className={`${styles.main} flex flex-1 flex-col justify-center align-center`}
-      ></main>
+      >
+        <MainScene />
+      </main>
 
       <footer
         className={`${styles.footer} w-full h-50 bg-black text-white px-40 flex align-center items-center justify-center uppercase`}
