@@ -4,21 +4,20 @@
 import * as React from 'react'
 import * as THREE from 'three'
 import { Canvas } from 'react-three-fiber'
-import { useTweaks } from "use-tweaks";
+import { useTweaks } from 'use-tweaks'
 import PropTypes from 'prop-types'
 
 import styles from './MainScene.module.css'
 
 const MainScene = (props) => {
-  const {
-    tagName: Tag,
-    className,
-    variant,
-    children,
-  } = props
+  const { tagName: Tag, className, variant, children } = props
 
   return (
-    <Tag className={`${styles.main_scene} ${styles[`main_scene__${variant}`]} ${className}`}>
+    <Tag
+      className={`${styles.main_scene} ${
+        styles[`main_scene__${variant}`]
+      } ${className}`}
+    >
       {children}
     </Tag>
   )
