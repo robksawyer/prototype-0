@@ -32,7 +32,7 @@ MainScene.propTypes = {
 
 MainScene.defaultProps = {
   tagName: Canvas,
-  className: '',
+  className: 'h-screen bg-red',
   variant: 'default',
   children: '',
 }
