@@ -30,13 +30,15 @@ import {
   SpotLightHelper,
   PointLightHelper,
 } from 'three'
-import { useHelper } from '@react-three/drei'
+import { useHelper, OrbitControls } from '@react-three/drei'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
 import { FaceNormalsHelper } from 'three/examples/jsm/helpers/FaceNormalsHelper'
 import { gsap } from 'gsap'
 
 import styles from './MainScene.module.css'
+
+import ThreeFiberWater from '../ThreeFiberWater'
 
 // Effects for the main scene
 const Effects = () => {
@@ -63,12 +65,13 @@ const Scene = () => {
   useEffect(() => void (spotLight.current.target = mesh.current), [scene])
   useHelper(spotLight, SpotLightHelper, 'teal')
   useHelper(pointLight, PointLightHelper, 0.5, 'hotpink')
-  useHelper(mesh, BoxHelper, '#272740')
-  useHelper(mesh, VertexNormalsHelper, 1, '#272740')
-  useHelper(mesh, FaceNormalsHelper, 0.5, '#272740')
+  // useHelper(mesh, BoxHelper, '#272740')
+  // useHelper(mesh, VertexNormalsHelper, 1, '#272740')
+  // useHelper(mesh, FaceNormalsHelper, 0.5, '#272740')
 
   return (
     <>
+      {/* Lights */}
       <pointLight position={[-10, 0, -20]} color="lightblue" intensity={2.5} />
       <group ref={group}>
         <pointLight
@@ -85,15 +88,17 @@ const Scene = () => {
         angle={0.5}
         distance={20}
       />
+
       <mesh ref={mesh} position={[0, 2, 0]} castShadow>
-        <boxGeometry attach="geometry" />
-        <meshStandardMaterial attach="material" color="lightblue" />
+        <boxGeometry />
+        <meshStandardMaterial color="lightblue" />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} receiveShadow>
-        <planeBufferGeometry args={[100, 100]} attach="geometry" />
-        <shadowMaterial attach="material" opacity={0.5} />
+        <planeBufferGeometry args={[100, 100]} />
+        <shadowMaterial opacity={0.5} />
       </mesh>
-      <gridHelper args={[30, 30, 30]} />
+      <ThreeFiberWater backgroundColor="blue" />
+      {/* <gridHelper args={[40, 100, 100]} /> */}
     </>
   )
 }
@@ -118,6 +123,7 @@ const MainScene = (props) => {
       <fog attach="fog" args={['floralwhite', 0, 20]} />
       <Scene />
       {/* <Effects /> */}
+      <OrbitControls />
     </Tag>
   )
 }
