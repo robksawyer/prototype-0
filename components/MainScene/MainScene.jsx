@@ -43,12 +43,6 @@ const Effects = () => {
   return <EffectComposer></EffectComposer>
 }
 
-// Lights for the scene
-// const Lights = ({ mesh }) => {
-
-//   return <></>
-// }
-
 const Scene = () => {
   const mesh = useRef()
   const { scene } = useThree()
@@ -99,6 +93,7 @@ const Scene = () => {
         <planeBufferGeometry args={[100, 100]} attach="geometry" />
         <shadowMaterial attach="material" opacity={0.5} />
       </mesh>
+      <gridHelper args={[30, 30, 30]} />
     </>
   )
 }
@@ -117,12 +112,12 @@ const MainScene = (props) => {
       style={{
         width: '100vw',
         height: 'calc(100vh - 50px)',
+        background: 'floralwhite',
       }}
     >
       <fog attach="fog" args={['floralwhite', 0, 20]} />
       <Scene />
-      <gridHelper args={[30, 30, 30]} />
-      <Effects />
+      {/* <Effects /> */}
     </Tag>
   )
 }
