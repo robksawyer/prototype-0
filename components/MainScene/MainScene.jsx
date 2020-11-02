@@ -50,6 +50,7 @@ import { easeInOutCubic } from '../../utils/easing'
 import styles from './MainScene.module.css'
 
 import ThreeFiberWater from '../ThreeFiberWater'
+import ShaderGeometry from '../ShaderGeometry'
 
 // Inject soft shadow shader
 // softShadows({
@@ -60,29 +61,6 @@ import ThreeFiberWater from '../ThreeFiberWater'
 //   rings: 11, // Rings (default: 11)
 // })
 
-const ColorShiftMaterial = shaderMaterial(
-  { time: 0, color: new Color(0.2, 0.0, 0.1) },
-  // vertex shader
-  glsl`
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  // fragment shader
-  glsl`
-    uniform float time;
-    uniform vec3 color;
-    varying vec2 vUv;
-    void main() {
-      gl_FragColor.rgba = vec4(0.5 + 0.3 * sin(vUv.yxx + time) + color, 1.0);
-    }
-  `
-)
-
-extend({ ColorShiftMaterial })
-
 // Effects for the main scene
 const Effects = () => {
   return <EffectComposer></EffectComposer>
@@ -91,7 +69,6 @@ const Effects = () => {
 const Scene = () => {
   const [hover, setHover] = useState(false)
   const mesh = useSubdivision(Math.PI / 2)
-  const mesh1 = useSubdivision(Math.PI / 2.5)
   const { scene } = useThree()
   const group = useRef()
   const floor = useRef()
@@ -115,8 +92,6 @@ const Scene = () => {
     mesh.current.position.x = Math.sin(clock.elapsedTime)
     mesh.current.position.z = Math.sin(clock.elapsedTime)
 
-    mesh1.current.rotation.x = mesh.current.rotation.x
-    mesh1.current.rotation.y = mesh.current.rotation.y
     // mesh1.current.rotation.z = (Math.sin(clock.elapsedTime) * Math.PI) / 1.5
     // mesh1.current.position.x = Math.sin(clock.elapsedTime)
     // mesh1.current.position.z = Math.sin(clock.elapsedTime)
@@ -161,10 +136,7 @@ const Scene = () => {
           <boxGeometry />
           <meshStandardMaterial color={hover ? '#ff00ff' : 'blue'} wireframe />
         </mesh>
-        <mesh ref={mesh1} position={[0, 2.5, 0]} castShadow>
-          <boxGeometry />
-          <meshStandardMaterial color="blue" />
-        </mesh>
+        <ShaderGeometry />
         <mesh rotation-x={-Math.PI / 2} receiveShadow>
           <planeBufferGeometry args={[100, 100]} />
           <shadowMaterial opacity={0.5} />
