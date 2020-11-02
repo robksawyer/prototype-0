@@ -122,7 +122,7 @@ const Scene = () => {
         castShadow
         position={[2, 5, 2]}
         ref={spotLight}
-        angle={0.5}
+        angle={0.65}
         distance={20}
       />
       <group ref={floor} position={[0, 0, 0]}>

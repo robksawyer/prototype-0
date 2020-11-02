@@ -13,8 +13,8 @@ import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHel
 
 import styles from './ShaderGeometry.module.css'
 
-import vertex from './shaders/colorShift/vertex.glsl'
-import fragment from './shaders/colorShift/fragment.glsl'
+import vertex from './shaders/colorShift/colorShift.vert'
+import fragment from './shaders/colorShift/colorShift.frag'
 
 const ColorShiftMaterial = shaderMaterial(
   { time: 0, color: new Color(0.2, 0.0, 0.1) },
