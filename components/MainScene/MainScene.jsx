@@ -1,7 +1,7 @@
 /**
  * @file MainScene.js
  */
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 
 import { useTweaks } from 'use-tweaks'
@@ -29,16 +29,59 @@ import {
   BoxHelper,
   SpotLightHelper,
   PointLightHelper,
+  Color,
 } from 'three'
-import { useHelper, OrbitControls } from '@react-three/drei'
+import {
+  useHelper,
+  OrbitControls,
+  softShadows,
+  useSubdivision,
+  shaderMaterial,
+} from '@react-three/drei'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
 import { FaceNormalsHelper } from 'three/examples/jsm/helpers/FaceNormalsHelper'
 import { gsap } from 'gsap'
 
+import { glsl } from 'glslify'
+
+import { easeInOutCubic } from '../../utils/easing'
+
 import styles from './MainScene.module.css'
 
 import ThreeFiberWater from '../ThreeFiberWater'
+
+// Inject soft shadow shader
+// softShadows({
+//   frustrum: 3.75, // Frustrum width (default: 3.75)
+//   size: 0.005, // World size (default: 0.005)
+//   near: 9.5, // Near plane (default: 9.5)
+//   samples: 17, // Samples (default: 17)
+//   rings: 11, // Rings (default: 11)
+// })
+
+const ColorShiftMaterial = shaderMaterial(
+  { time: 0, color: new Color(0.2, 0.0, 0.1) },
+  // vertex shader
+  glsl`
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  // fragment shader
+  glsl`
+    uniform float time;
+    uniform vec3 color;
+    varying vec2 vUv;
+    void main() {
+      gl_FragColor.rgba = vec4(0.5 + 0.3 * sin(vUv.yxx + time) + color, 1.0);
+    }
+  `
+)
+
+extend({ ColorShiftMaterial })
 
 // Effects for the main scene
 const Effects = () => {
@@ -46,19 +89,38 @@ const Effects = () => {
 }
 
 const Scene = () => {
-  const mesh = useRef()
+  const [hover, setHover] = useState(false)
+  const mesh = useSubdivision(Math.PI / 2)
+  const mesh1 = useSubdivision(Math.PI / 2.5)
   const { scene } = useThree()
   const group = useRef()
+  const floor = useRef()
 
   const spotLight = useRef()
   const pointLight = useRef()
 
-  useFrame(({ clock }) => {
+  useEffect(() => {
+    gsap.to(floor.current.position, {
+      z: 1.5,
+      // x: -2,
+      // y: 2,
+      duration: 4,
+    })
+  }, [])
+
+  useFrame(({ clock, mouse }) => {
     mesh.current.rotation.x = (Math.sin(clock.elapsedTime) * Math.PI) / 4
     mesh.current.rotation.y = (Math.sin(clock.elapsedTime) * Math.PI) / 4
-    mesh.current.rotation.z = (Math.sin(clock.elapsedTime) * Math.PI) / 4
+    mesh.current.rotation.z = (Math.sin(clock.elapsedTime) * Math.PI) / 1.5
     mesh.current.position.x = Math.sin(clock.elapsedTime)
     mesh.current.position.z = Math.sin(clock.elapsedTime)
+
+    mesh1.current.rotation.x = mesh.current.rotation.x
+    mesh1.current.rotation.y = mesh.current.rotation.y
+    // mesh1.current.rotation.z = (Math.sin(clock.elapsedTime) * Math.PI) / 1.5
+    // mesh1.current.position.x = Math.sin(clock.elapsedTime)
+    // mesh1.current.position.z = Math.sin(clock.elapsedTime)
+
     group.current.rotation.y += 0.02
   })
 
@@ -88,16 +150,31 @@ const Scene = () => {
         angle={0.5}
         distance={20}
       />
-
-      <mesh ref={mesh} position={[0, 2, 0]} castShadow>
-        <boxGeometry />
-        <meshStandardMaterial color="lightblue" />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} receiveShadow>
-        <planeBufferGeometry args={[100, 100]} />
-        <shadowMaterial opacity={0.5} />
-      </mesh>
-      <ThreeFiberWater backgroundColor="blue" />
+      <group ref={floor} position={[0, 0, 0]}>
+        <mesh
+          ref={mesh}
+          position={[0, 2, 0]}
+          castShadow
+          onPointerOver={(event) => setHover(true)}
+          onPointerOut={(event) => setHover(false)}
+        >
+          <boxGeometry />
+          <meshStandardMaterial color={hover ? '#ff00ff' : 'blue'} wireframe />
+        </mesh>
+        <mesh ref={mesh1} position={[0, 2.5, 0]} castShadow>
+          <boxGeometry />
+          <meshStandardMaterial color="blue" />
+        </mesh>
+        <mesh rotation-x={-Math.PI / 2} receiveShadow>
+          <planeBufferGeometry args={[100, 100]} />
+          <shadowMaterial opacity={0.5} />
+        </mesh>
+        {/* <ThreeFiberWater
+          backgroundColor="black"
+          waterColor="#555555"
+          sunColor="#FF5733"
+        /> */}
+      </group>
       {/* <gridHelper args={[40, 100, 100]} /> */}
     </>
   )
@@ -110,6 +187,9 @@ const MainScene = (props) => {
     <Tag
       colorManagement
       shadowMap
+      onCreated={({ gl }) => {
+        // gl.antialiased = true
+      }}
       camera={{ position: [-5, 5, 5] }}
       className={`${styles.main_scene} ${
         styles[`main_scene__${variant}`]

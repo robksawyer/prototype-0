@@ -21,8 +21,8 @@ function Planes({
 }) {
   const water = useMemo(() => {
     return new Water(new PlaneBufferGeometry(1000, 800, 1000), {
-      textureWidth: 512,
-      textureHeight: 512,
+      textureWidth: 1024,
+      textureHeight: 1024,
       waterNormals: new TextureLoader().load(
         '/3d/waternormals.jpg',
         (texture) => {
@@ -36,11 +36,20 @@ function Planes({
       distortionScale: 30.0,
       fog: false,
       time: 0.0,
+      receiveShadow: true,
     })
   }, [])
 
   const ref = useRef()
+  // const val = Math.random() * 10
   useFrame((state, delta) => {
+    const { clock } = state
+
+    // water.material.uniforms['sunDirection'].value = new Vector3(
+    //   Math.sin(clock.getElapsedTime()),
+    //   Math.cos((clock.getElapsedTime() * Math.PI) / 2),
+    //   Math.sin(clock.getElapsedTime() * val)
+    // )
     water.material.uniforms['time'].value += 1.0 / 60.0 //delta * 0.5
   })
 
@@ -94,9 +103,9 @@ ThreeFiberWater.defaultProps = {
   className: '',
   variant: 'default',
   children: '',
-  backgroundColor: 'blue',
+  backgroundColor: 'floralwhite',
   sunColor: '#ffffff',
-  waterColor: 'green',
+  waterColor: '#41709c',
 }
 
 export default ThreeFiberWater
